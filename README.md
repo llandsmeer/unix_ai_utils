@@ -1,8 +1,6 @@
 # unix.ai
 
-This repository containing command line programs that bring the 'power' of LLMs to the shell.
-
-
+This is an experiment to bring the 'power' of LLMs to the shell, keeping in mind unix philosophy:
 
 >  - Write programs that do one thing and do it well.
 >  - Write programs to work together.
@@ -67,16 +65,20 @@ curve, transparency issues, legal concerns, and limitations in handling
 specialized tasks.
 ```
 
-Some more **tool** examples:
+## More examples
+
+Tool inside xargs
 
 ```
-file * | xargs tool mime content type | tool align columns
+$ file * | xargs tool mime content type | tool align columns
 install.sh     text/x-shellscript
 README.md      text/markdown
 tool           text/x-python
 vibe           text/x-python
 vibe.sh        text/x-shellscript
 ```
+
+Table formatting
 
 ```
 $ ls -alh * | tool markdown table just size date time na
