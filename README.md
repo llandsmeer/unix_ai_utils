@@ -59,8 +59,12 @@ Execute command? (yes/no):
 **prompt**: ask questions
 
 ```
-$ prompt what are the downsides of ai as a coding tool
-The downsides of using AI as a coding tool include reliability issues, as the generated code may have errors or not fully understand the project's context. It can create a learning curve, making developers reliant on AI and potentially hindering their ability to troubleshoot independently. Security risks arise as AI-generated code might introduce vulnerabilities. Intellectual property concerns emerge regarding ownership of AI-produced code. Maintainability issues occur if the code is non-standard or hard to understand. Bias in AI training data can lead to discriminatory outcomes. Lastly, over-reliance on AI might cause job displacement, particularly affecting entry-level developers.
+$ prompt what are the downsides of ai as a coding tool, short text | fmt
+The downsides of AI as a coding tool include potential errors, lack of
+context understanding, generating unmaintainable code, over-reliance
+reducing problem-solving skills, debugging difficulties, learning
+curve, transparency issues, legal concerns, and limitations in handling
+specialized tasks.
 ```
 
 Some more **tool** examples:
