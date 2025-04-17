@@ -1,0 +1,65 @@
+#!/usr/bin/env python3
+
+import sys
+import requests
+import json
+import subprocess
+import re
+import os
+
+def secret():
+    try:
+        with open(os.path.expanduser('~/.groq_secret'), 'rt') as f:
+            key = f.read().strip()
+            return key
+    except IOError:
+        print('failed to load ~/.groq_secret')
+        exit(1)
+
+url = "https://api.groq.com/openai/v1/chat/completions"
+headers = {"Content-Type": "application/json", "Authorization": f"Bearer {secret()}"}
+model = "meta-llama/llama-4-scout-17b-16e-instruct"
+model = 'Deepseek-r1-distill-llama-70B'
+prelude = '''You are an expert programmer/coder. You will answer the next question kindly and as correct and concise as possible. Your output is a *single* code snippet, wihout the surrounding markdown backticks. Do not use comments, unless absolutely neccesairy. Use four-space indents. Keep it correct and modern, when in doubt use python3. Generate the shortest possible code that hits the requirements and nothing more. Remember, do not every return anything else than a single code snippet. Never write text, only code.
+\nThis is the question:
+'''
+
+def get_prompt(argv, context):
+    prompt = prelude + ' '.join(argv)
+    if context:
+        prompt += '\n\nYour task is to modify the following code:\n\n```python\n' + context + '\n```'
+    return prompt
+
+def remove_markdown_code_markers(s):
+    return re.sub(r'^```[a-z]*$|```$', '', s.strip(), flags=re.MULTILINE).strip()
+
+def copy_to_clipboard(text):
+    subprocess.run('xsel -b', input=text.encode(), check=True, shell=True, stdout=subprocess.DEVNULL)
+
+def remove_think(text):
+    return re.sub(r'<think>.*?</think>', '', text, flags=re.DOTALL).strip()
+
+def main():
+    clipboard = len(sys.argv) >1 and sys.argv[1] == '-y'
+    if clipboard:
+        sys.argv.pop(1)
+    argv = sys.argv[1:]
+    context = sys.stdin.read().strip() if not sys.stdin.isatty() else False
+    data = {"model": model, "messages": [{"role": "user", "content": get_prompt(argv, context)}]}
+    response = requests.post(url, headers=headers, data=json.dumps(data))
+    j = response.json()
+    try:
+        output = j['choices'][0]['message']['content']
+    except Exception as ex:
+        print(repr(ex))
+        print(j)
+        exit(1)
+
+    output = remove_think(output)
+    output = remove_markdown_code_markers(output)
+    print(output)
+    if clipboard:
+        copy_to_clipboard(output)
+
+if __name__ == "__main__":
+    main()
